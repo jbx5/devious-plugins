@@ -12,15 +12,15 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PluginChanged;
-import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.unethicalite.api.commons.Time;
 import net.unethicalite.api.events.LobbyWorldSelectToggled;
 import net.unethicalite.api.events.LoginStateChanged;
 import net.unethicalite.api.events.WorldHopped;
 import net.unethicalite.api.game.Game;
 import net.unethicalite.api.game.Worlds;
 import net.unethicalite.api.input.Keyboard;
-import net.unethicalite.api.input.Mouse;
+import net.unethicalite.api.plugins.LoopedPlugin;
 import net.unethicalite.api.script.blocking_events.WelcomeScreenEvent;
 import net.unethicalite.api.widgets.Widgets;
 import org.jboss.aerogear.security.otp.Totp;
@@ -29,7 +29,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(name = "Unethical Auto Login", enabledByDefault = false)
 @Extension
 @Slf4j
-public class UnethicalAutoLoginPlugin extends Plugin
+public class UnethicalAutoLoginPlugin extends LoopedPlugin
 {
 	@Inject
 	private UnethicalAutoLoginConfig config;
@@ -150,15 +150,35 @@ public class UnethicalAutoLoginPlugin extends Plugin
 
 	private void login()
 	{
+		log.info("Logging in");
 		client.setUsername(config.username());
 		client.setPassword(config.password());
-
-		Mouse.click(299, 322, true);
+		Time.sleep(1000);
+		log.info("Sending enter button triplet");
+		Keyboard.sendEnter();
+		Keyboard.sendEnter();
+		Keyboard.sendEnter();
 	}
 
 	private void enterAuth()
 	{
 		client.setOtp(new Totp(config.auth()).now());
 		Keyboard.sendEnter();
+	}
+
+	@Override
+	protected int loop()
+	{
+		log.info("Game State: " + client.getGameState().name());
+		Time.sleep(60_000);
+		if (client.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			if (client.getLoginIndex() == 2) login();
+		}
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			prepareLogin();
+		}
+		return 1000;
 	}
 }
