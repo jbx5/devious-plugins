@@ -150,11 +150,9 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 
 	private void login()
 	{
-		log.info("Logging in");
 		client.setUsername(config.username());
 		client.setPassword(config.password());
 		Time.sleep(1000);
-		log.info("Sending enter button triplet");
 		Keyboard.sendEnter();
 		Keyboard.sendEnter();
 		Keyboard.sendEnter();
@@ -169,7 +167,6 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 	@Override
 	protected int loop()
 	{
-		log.info("Game State: " + client.getGameState().name());
 		Time.sleep(60_000);
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
