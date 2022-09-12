@@ -168,6 +168,7 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 
 	private void enterAuth()
 	{
+		client.setWorldSelectOpen(false);
 		client.setOtp(new Totp(config.auth()).now());
 		Keyboard.sendEnter();
 	}
@@ -175,6 +176,7 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 	@Override
 	protected int loop()
 	{
+
 		Time.sleep(15_000);
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
