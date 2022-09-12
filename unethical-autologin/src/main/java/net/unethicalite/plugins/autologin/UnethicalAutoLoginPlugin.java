@@ -150,12 +150,20 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 
 	private void login()
 	{
+		if (client.getGameState() != GameState.LOGIN_SCREEN)
+		{
+			return;
+		}
 		client.setUsername(config.username());
 		client.setPassword(config.password());
-		Time.sleep(1000);
-		Keyboard.sendEnter();
-		Keyboard.sendEnter();
-		Keyboard.sendEnter();
+		if (client.getGameState() != GameState.LOGIN_SCREEN_AUTHENTICATOR)
+		{
+			client.setGameState(GameState.LOGGING_IN);
+		}
+		else
+		{
+			enterAuth();
+		}
 	}
 
 	private void enterAuth()
@@ -167,7 +175,7 @@ public class UnethicalAutoLoginPlugin extends LoopedPlugin
 	@Override
 	protected int loop()
 	{
-		Time.sleep(60_000);
+		Time.sleep(15_000);
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
 			if (client.getLoginIndex() == 2) login();
